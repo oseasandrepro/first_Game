@@ -1,0 +1,51 @@
+^["@/pico/pico.ceu"]
+
+pico-state-set-size([810,610])
+pico-state-set-title("First_Game")
+pico-state-set-font("tiny.ttf", 10)
+
+spawn {
+    var score = 0
+    var score-text = "score: "
+    var player :Rect = [[-10,5],[5,5]]
+    var coin :Rect = [[0,0],[5,5]]
+
+    spawn {
+        every :Pico.Draw {
+            pico-state-set-color-draw([255, 255, 255, 255])
+            pico-output-draw-rect(player)
+            pico-output-draw-text([-20,25], score-text)
+            pico-state-set-color-draw([255, 255, 0, 255])
+            pico-output-draw-rect(coin)
+            
+        }
+    }
+
+    loop{
+
+        par-and{
+            await :Pico.Key.Dn{
+            ifs it.key {
+                :Key-Left  => set player.pos.x = player.pos.x - 1
+                :Key-Right => set player.pos.x = player.pos.x + 1
+                :Key-Down  => set player.pos.y = player.pos.y - 1
+                :Key-Up    => set player.pos.y = player.pos.y + 1
+            }
+
+            if ( pico-rect-vs-rect?(player, coin) ){
+                watching :1:s{
+                    every :Pico.Draw{
+                        pico-output-draw-text([0,-20], "Hit!")
+                    }
+                }
+            }
+        }
+        } with {
+
+        }
+    }
+}
+
+
+
+pico-loop()
