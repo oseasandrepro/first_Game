@@ -4,23 +4,22 @@ pico-state-set-size([810,610])
 pico-state-set-title("First_Game")
 pico-state-set-font("tiny.ttf", 10)
 
-var lower-x = -40
-var upper-x = 40
-var lower-y = -30
-var upper-y = 30
+val LOWER-X = -40
+val UPPER-X = 40
+val LOWER-Y = -30
+val UPPER-Y = 30
+
+random-seed()
 
 func random-number(lower, upper){
-    
-    random-seed()
-    var ramdom-value = ( (random-next() % ((upper - lower) + 1)) + lower );  
-
+    val ramdom-value = ( (random-next() % ((upper - lower) + 1)) + lower );
     ramdom-value
 }
 
 func set-rect-in-ramdom-position(rect :Rect){
 
-    set rect.pos.x = random-number(lower-x, upper-x)
-    set rect.pos.y = random-number(lower-y, upper-y)
+    set rect.pos.x = random-number(LOWER-X, UPPER-X)
+    set rect.pos.y = random-number(LOWER-Y, UPPER-Y)
 }
 
 task Yoyo(rect:Rect){
@@ -36,7 +35,7 @@ task Yoyo(rect:Rect){
     }
 }
 
-spawn {
+spawn{
     var score = 0
     var score-text = "score:"
     var player :Rect = [[-10,5],[5,5]]
@@ -44,39 +43,37 @@ spawn {
     val yoyos = tasks(1)
 
     spawn {
-        every :Pico.Draw {
-            pico-state-set-color-draw([255, 255, 255, 255])
-            pico-output-draw-rect(player)
-            pico-output-draw-text([-15,25], score-text++to-string(score))
-            pico-state-set-color-draw([255, 255, 0, 255])
-            pico-output-draw-rect(coin)
-            
+
+        par{
+            every :Pico.Draw{
+                pico-state-set-color-draw([255, 255, 255, 255])
+                pico-output-draw-rect(player)
+                pico-output-draw-text([-15,25], score-text++to-string(score))
+                pico-state-set-color-draw([255, 255, 0, 255])
+                pico-output-draw-rect(coin)
+                
+            }
+        } with{
+            every :Pico.Frame{
+                if ( pico-rect-vs-rect?(player, coin) ){
+                set-rect-in-ramdom-position(coin)
+                set score = score + 10
+                spawn Yoyo(player) in yoyos
+                }
+            }
         }
     }
 
     loop{
-
-        par-and{
             every :Pico.Key.Dn{
-                ifs it.key {
-                    :Key-Left  => if( (player.pos.x - 1) > (lower-x + (player.dim.w/2)) ) { set player.pos.x = player.pos.x - 1 }
-                    :Key-Right => if( (player.pos.x + 1) < (upper-x - (player.dim.w/2)) ) { set player.pos.x = player.pos.x + 1 }
-                    :Key-Down  => if( (player.pos.y - 1) > (lower-y + (player.dim.h/2)) ) { set player.pos.y = player.pos.y - 1 }
-                    :Key-Up    => if( (player.pos.y + 1) < (upper-y - (player.dim.h/2)) ) { set player.pos.y = player.pos.y + 1 }
+                ifs it.key{
+                    :Key-Left  => if( (player.pos.x - 1) > (LOWER-X + (player.dim.w/2)) ) { set player.pos.x = player.pos.x - 1 }
+                    :Key-Right => if( (player.pos.x + 1) < (UPPER-X - (player.dim.w/2)) ) { set player.pos.x = player.pos.x + 1 }
+                    :Key-Down  => if( (player.pos.y - 1) > (LOWER-Y + (player.dim.h/2)) ) { set player.pos.y = player.pos.y - 1 }
+                    :Key-Up    => if( (player.pos.y + 1) < (UPPER-Y - (player.dim.h/2)) ) { set player.pos.y = player.pos.y + 1 }
                 }
 
-                if ( pico-rect-vs-rect?(player, coin) ){
-                    set-rect-in-ramdom-position(coin)
-                    set score = score + 10
-                    spawn Yoyo(player) in yoyos
-                }
             }
-        } with {
-
-        }
     }
 }
-
-
-
 pico-loop()
