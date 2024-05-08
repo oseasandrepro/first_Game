@@ -22,23 +22,22 @@ func set-rect-in-ramdom-position(rect :Rect){
     set rect.pos.y = random-number(LOWER-Y, UPPER-Y)
 }
 
-task Yoyo(rect:Rect){
-    var width = rect.dim.w
-    var hight = rect.dim.h
+task Yoyo(rect:Rect, dt, scale){
+    val sleep-time = dt/10
+    val r = math-ceil( (rect.dim.w*scale)/sleep-time )
 
-    watching :400:ms{
+    watching :dt:ms{
         loop {
-            set rect.dim.w = (rect.dim.w+2)
-            set rect.dim.h = (rect.dim.h+2)
-            await(:16:ms)
+            set rect.dim.w = (rect.dim.w + r)
+            set rect.dim.h = (rect.dim.h+r)
+            await(:sleep-time:ms)
         }
     }
-
-    watching :400:ms {
+    watching :dt:ms {
         loop {
-            set rect.dim.w = (rect.dim.w-2)
-            set rect.dim.h = (rect.dim.h-2)
-            await(:16:ms)
+            set rect.dim.w = (rect.dim.w - r)
+            set rect.dim.h = (rect.dim.h - r)
+            await(:sleep-time:ms)
         }
     }    
 }
@@ -46,7 +45,7 @@ task Yoyo(rect:Rect){
 spawn{
     var score = 0
     var score-text = "score:"
-    var player :Rect = [[-10,5],[5,5]]
+    var player :Rect = [[-10,5],[6,6]]
     var coin :Rect = [[-40,0],[5,5]]
     val yoyos = tasks(1)
 
@@ -66,7 +65,7 @@ spawn{
                 if ( pico-rect-vs-rect?(player, coin) ){
                 set-rect-in-ramdom-position(coin)
                 set score = score + 10
-                spawn Yoyo(player) in yoyos
+                spawn Yoyo(player, 200, 1.2) in yoyos
                 }
             }
         }
