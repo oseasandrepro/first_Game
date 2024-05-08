@@ -26,13 +26,21 @@ task Yoyo(rect:Rect){
     var width = rect.dim.w
     var hight = rect.dim.h
 
-    watching :200:ms{
-        set rect.dim.w = (width+4)
-        set rect.dim.h = (hight+4)
-        await:50:ms{}
-        set rect.dim.w = width
-        set rect.dim.h = hight
+    watching :400:ms{
+        loop {
+            set rect.dim.w = (rect.dim.w+2)
+            set rect.dim.h = (rect.dim.h+2)
+            await(:16:ms)
+        }
     }
+
+    watching :400:ms {
+        loop {
+            set rect.dim.w = (rect.dim.w-2)
+            set rect.dim.h = (rect.dim.h-2)
+            await(:16:ms)
+        }
+    }    
 }
 
 spawn{
