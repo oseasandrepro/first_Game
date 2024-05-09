@@ -24,19 +24,19 @@ func set-rect-in-ramdom-position(rect :Rect){
 
 task Yoyo(rect:Rect, dt, scale){
     val sleep-time = dt/10
-    val r = math-ceil( (rect.dim.w*scale)/sleep-time )
+    val quotient = math-ceil( (rect.dim.w*scale)/sleep-time )
 
     watching :dt:ms{
         loop {
-            set rect.dim.w = (rect.dim.w + r)
-            set rect.dim.h = (rect.dim.h+r)
+            set rect.dim.w = (rect.dim.w + quotient)
+            set rect.dim.h = (rect.dim.h + quotient)
             await(:sleep-time:ms)
         }
     }
     watching :dt:ms {
         loop {
-            set rect.dim.w = (rect.dim.w - r)
-            set rect.dim.h = (rect.dim.h - r)
+            set rect.dim.w = (rect.dim.w - quotient)
+            set rect.dim.h = (rect.dim.h - quotient)
             await(:sleep-time:ms)
         }
     }    
