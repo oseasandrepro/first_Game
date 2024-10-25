@@ -1,18 +1,18 @@
 ^["@/pico/pico.ceu"]
 
-pico-state-set-size([810,610])
-pico-state-set-title("First_Game")
-pico-state-set-font("tiny.ttf", 10)
+pico.set.size([810,610])
+pico.set.title("First_Game")
+pico.set.font("tiny.ttf", 10)
 
 val LOWER-X = -40
 val UPPER-X = 40
 val LOWER-Y = -30
 val UPPER-Y = 30
 
-random-seed()
+random.seed()
 
 func random-number(lower, upper){
-    val ramdom-value = ( (random-next() % ((upper - lower) + 1)) + lower );
+    val ramdom-value = ( (random.next() % ((upper - lower) + 1)) + lower );
     ramdom-value
 }
 
@@ -24,20 +24,20 @@ func set-rect-in-ramdom-position(rect :Rect){
 
 task Yoyo(rect:Rect, dt, scale){
     val sleep-time = dt/10
-    val quotient = math-ceil( (rect.dim.w*scale)/sleep-time )
+    val quotient = math.ceil( (rect.dim.w*scale)/sleep-time )
 
-    watching :dt:ms{
+    watching <dt:ms>{
         loop {
             set rect.dim.w = (rect.dim.w + quotient)
             set rect.dim.h = (rect.dim.h + quotient)
-            await(:sleep-time:ms)
+            await(<sleep-time:ms>)
         }
     }
-    watching :dt:ms {
+    watching <dt:ms> {
         loop {
             set rect.dim.w = (rect.dim.w - quotient)
             set rect.dim.h = (rect.dim.h - quotient)
-            await(:sleep-time:ms)
+            await(<sleep-time:ms>)
         }
     }    
 }
@@ -53,11 +53,11 @@ spawn{
 
         par{
             every :Pico.Draw{
-                pico-state-set-color-draw([255, 255, 255, 255])
-                pico-output-draw-rect(player)
-                pico-output-draw-text([-15,25], score-text++to-string(score))
-                pico-state-set-color-draw([255, 255, 0, 255])
-                pico-output-draw-rect(coin)
+                pico.set.color.draw([255, 255, 255, 255])
+                pico.output.draw.rect(player)
+                pico.output.draw.text([-15,25], score-text++to-string(score))
+                pico.set.color.draw([255, 255, 0, 255])
+                pico.output.draw.rect(coin)
                 
             }
         } with{
@@ -73,11 +73,11 @@ spawn{
 
     loop{
             every :Pico.Key.Dn{
-                ifs it.key{
-                    :Key-Left  => set player.pos.x = between ([LOWER-X + (player.dim.w/2), UPPER-X], player.pos.x - 1)
-                    :Key-Right => set player.pos.x = between ([LOWER-X, UPPER-X - (player.dim.w/2)], player.pos.x + 1)
-                    :Key-Down  => set player.pos.y = between ([LOWER-Y + (player.dim.h/2), UPPER-Y], player.pos.y - 1)
-                    :Key-Up    => set player.pos.y = between ([LOWER-Y, UPPER-Y - (player.dim.h/2)], player.pos.y + 1)
+                ifs {
+                    it.key == :Key-Left  => set player.pos.x = between ([LOWER-X + (player.dim.w/2), UPPER-X], player.pos.x - 1)
+                    it.key == :Key-Right => set player.pos.x = between ([LOWER-X, UPPER-X - (player.dim.w/2)], player.pos.x + 1)
+                    it.key == :Key-Down  => set player.pos.y = between ([LOWER-Y + (player.dim.h/2), UPPER-Y], player.pos.y - 1)
+                    it.key == :Key-Up    => set player.pos.y = between ([LOWER-Y, UPPER-Y - (player.dim.h/2)], player.pos.y + 1)
                 }
 
             }
