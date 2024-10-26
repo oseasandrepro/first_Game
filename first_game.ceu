@@ -1,13 +1,17 @@
 ^["@/pico/pico.ceu"]
 
-pico.set.size([400,250])
-pico.set.title("First_Game")
-pico.set.font("tiny.ttf", 18)
+val WINDOW-WIDTH = 400
+val WINDOW-HEIGHT = 400
 
 val LOWER-X = 0
-val UPPER-X = 400
+val UPPER-X = WINDOW-WIDTH
 val LOWER-Y = 0
-val UPPER-Y = 250
+val UPPER-Y = WINDOW-HEIGHT
+
+pico.set.size([400,400])
+pico.set.title("First_Game")
+pico.set.font("tiny.ttf", 20)
+
 
 random.seed()
 
@@ -55,7 +59,7 @@ spawn{
             every :Pico.Draw{
                 pico.set.color.draw([255, 255, 255, 255])
                 pico.output.draw.rect(player)
-                pico.output.draw.text([50,10], score-text++to-string(score))
+                pico.output.draw.text([50,15], score-text++to-string(score))
                 pico.set.color.draw([255, 255, 0, 255])
                 pico.output.draw.rect(coin)
                 
