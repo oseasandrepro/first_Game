@@ -1,13 +1,13 @@
 ^["@/pico/pico.ceu"]
 
-pico.set.size([810,610])
+pico.set.size([400,250])
 pico.set.title("First_Game")
-pico.set.font("tiny.ttf", 10)
+pico.set.font("tiny.ttf", 18)
 
-val LOWER-X = -40
-val UPPER-X = 40
-val LOWER-Y = -30
-val UPPER-Y = 30
+val LOWER-X = 0
+val UPPER-X = 400
+val LOWER-Y = 0
+val UPPER-Y = 250
 
 random.seed()
 
@@ -18,8 +18,8 @@ func random-number(lower, upper){
 
 func set-rect-in-ramdom-position(rect :Rect){
 
-    set rect.pos.x = random-number(LOWER-X, UPPER-X)
-    set rect.pos.y = random-number(LOWER-Y, UPPER-Y)
+    set rect.pos.x = random-number(LOWER-X + (rect.dim.w/2), UPPER-X - (rect.dim.w/2))
+    set rect.pos.y = random-number(LOWER-Y + (rect.dim.h/2) , UPPER-Y - (rect.dim.h/2))
 }
 
 task Yoyo(rect:Rect, dt, scale){
@@ -45,8 +45,8 @@ task Yoyo(rect:Rect, dt, scale){
 spawn{
     var score = 0
     var score-text = "score:"
-    var player :Rect = [[-10,5],[6,6]]
-    var coin :Rect = [[-40,0],[5,5]]
+    var player :Rect = [[200,125],[50,50]]
+    var coin :Rect = [[100,90],[30,30]]
     val yoyos = tasks(1)
 
     spawn {
@@ -55,14 +55,14 @@ spawn{
             every :Pico.Draw{
                 pico.set.color.draw([255, 255, 255, 255])
                 pico.output.draw.rect(player)
-                pico.output.draw.text([-15,25], score-text++to-string(score))
+                pico.output.draw.text([50,10], score-text++to-string(score))
                 pico.set.color.draw([255, 255, 0, 255])
                 pico.output.draw.rect(coin)
                 
             }
         } with{
             every :Pico.Frame{
-                if ( pico-rect-vs-rect?(player, coin) ){
+                if ( pico.rect-vs-rect?(player, coin) ){
                 set-rect-in-ramdom-position(coin)
                 set score = score + 10
                 spawn Yoyo(player, 200, 1.2) in yoyos
@@ -74,13 +74,13 @@ spawn{
     loop{
             every :Pico.Key.Dn{
                 ifs {
-                    it.key == :Key-Left  => set player.pos.x = between ([LOWER-X + (player.dim.w/2), UPPER-X], player.pos.x - 1)
-                    it.key == :Key-Right => set player.pos.x = between ([LOWER-X, UPPER-X - (player.dim.w/2)], player.pos.x + 1)
-                    it.key == :Key-Down  => set player.pos.y = between ([LOWER-Y + (player.dim.h/2), UPPER-Y], player.pos.y - 1)
-                    it.key == :Key-Up    => set player.pos.y = between ([LOWER-Y, UPPER-Y - (player.dim.h/2)], player.pos.y + 1)
+                    it.key == :Key-Left  => set player.pos.x = math.between (LOWER-X + (player.dim.w/2), player.pos.x - 3, UPPER-X)
+                    it.key == :Key-Right => set player.pos.x = math.between (LOWER-X, player.pos.x + 3, UPPER-X - (player.dim.w/2))
+                    it.key == :Key-Down  => set player.pos.y = math.between (LOWER-Y, player.pos.y + 3, UPPER-Y - (player.dim.h/2))
+                    it.key == :Key-Up    => set player.pos.y = math.between (LOWER-Y + (player.dim.h/2), player.pos.y - 3, UPPER-Y)
                 }
 
             }
     }
 }
-pico-loop()
+pico.loop()
